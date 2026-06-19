@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Partner Standalone Flow</title>
+		<style>
+			:root {
+				color-scheme: light;
+				--bg: #f6f7f9;
+				--panel: #ffffff;
+				--text: #111827;
+				--muted: #5b6472;
+				--line: #d9dee7;
+				--accent: #155eef;
+				--accent-dark: #0b4bd3;
+				--danger: #b42318;
+				--success: #067647;
+				--warning: #b54708;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				min-height: 100vh;
+				background: var(--bg);
+				color: var(--text);
+				font-family:
+					Inter,
+					ui-sans-serif,
+					system-ui,
+					-apple-system,
+					BlinkMacSystemFont,
+					'Segoe UI',
+					sans-serif;
+			}
+
+			main {
+				width: min(1100px, calc(100vw - 32px));
+				margin: 0 auto;
+				padding: 32px 0;
+			}
+
+			header {
+				display: flex;
+				align-items: flex-start;
+				justify-content: space-between;
+				gap: 24px;
+				margin-bottom: 20px;
+			}
+
+			h1,
+			h2 {
+				margin: 0;
+				letter-spacing: 0;
+			}
+
+			h1 {
+				font-size: clamp(28px, 4vw, 42px);
+				line-height: 1.05;
+			}
+
+			h2 {
+				font-size: 17px;
+				line-height: 1.3;
+			}
+
+			p {
+				margin: 8px 0 0;
+				color: var(--muted);
+				line-height: 1.5;
+			}
+
+			.shell {
+				display: grid;
+				grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+				gap: 18px;
+				align-items: start;
+			}
+
+			.panel {
+				background: var(--panel);
+				border: 1px solid var(--line);
+				border-radius: 8px;
+			}
+
+			.panel-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				padding: 16px 16px 0;
+			}
+
+			.panel-body {
+				padding: 16px;
+			}
+
+			.stack {
+				display: grid;
+				gap: 14px;
+			}
+
+			.actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+			}
+
+			.profile-toggle {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				border: 1px solid var(--line);
+				border-radius: 8px;
+				padding: 12px;
+			}
+
+			.profile-label {
+				color: var(--muted);
+				font-size: 14px;
+				font-weight: 700;
+			}
+
+			.profile-label.active {
+				color: var(--text);
+			}
+
+			.switch {
+				display: inline-flex;
+				align-items: center;
+				cursor: pointer;
+			}
+
+			.switch input {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				clip: rect(0 0 0 0);
+				clip-path: inset(50%);
+				overflow: hidden;
+				white-space: nowrap;
+			}
+
+			.switch-track {
+				position: relative;
+				width: 52px;
+				height: 30px;
+				border-radius: 999px;
+				background: #d0d5dd;
+				transition: background 160ms ease;
+			}
+
+			.switch-track::after {
+				content: '';
+				position: absolute;
+				top: 4px;
+				left: 4px;
+				width: 22px;
+				height: 22px;
+				border-radius: 50%;
+				background: #fff;
+				box-shadow: 0 1px 3px rgba(16, 24, 40, 0.25);
+				transition: transform 160ms ease;
+			}
+
+			.switch input:checked + .switch-track {
+				background: var(--accent);
+			}
+
+			.switch input:checked + .switch-track::after {
+				transform: translateX(22px);
+			}
+
+			.switch input:focus-visible + .switch-track {
+				outline: 2px solid #84adff;
+				outline-offset: 2px;
+			}
+
+			button {
+				min-height: 40px;
+				border: 1px solid #c5ccd8;
+				border-radius: 6px;
+				background: #fff;
+				color: var(--text);
+				cursor: pointer;
+				font: inherit;
+				font-size: 14px;
+				font-weight: 700;
+				padding: 0 14px;
+			}
+
+			button.primary {
+				border-color: var(--accent);
+				background: var(--accent);
+				color: #fff;
+			}
+
+			button.primary:hover {
+				background: var(--accent-dark);
+			}
+
+			button:disabled {
+				cursor: not-allowed;
+				opacity: 0.55;
+			}
+
+			button:focus-visible {
+				outline: 2px solid #84adff;
+				outline-offset: 2px;
+			}
+
+			.badge {
+				display: inline-flex;
+				align-items: center;
+				min-height: 28px;
+				border-radius: 999px;
+				background: #eef4ff;
+				color: #1849a9;
+				font-size: 12px;
+				font-weight: 700;
+				padding: 0 10px;
+				white-space: nowrap;
+			}
+
+			pre {
+				min-height: 220px;
+				margin: 0;
+				overflow: auto;
+				border-radius: 6px;
+				background: #101828;
+				color: #d1e0ff;
+				font-size: 12px;
+				line-height: 1.55;
+				padding: 14px;
+				white-space: pre-wrap;
+			}
+
+			@media (max-width: 860px) {
+				header,
+				.shell {
+					grid-template-columns: 1fr;
+				}
+
+				header {
+					display: grid;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<header>
+				<div>
+					<h1>Partner standalone flow</h1>
+					<p>`@worldcoin/idkit@2.0.2`, device verification, partner mode, raw callback output.</p>
+				</div>
+				<span class="badge" id="sdk-state">SDK not loaded</span>
+			</header>
+
+			<section class="shell">
+				<div class="stack">
+					<div class="panel">
+						<div class="panel-header">
+							<h2>IDKit config</h2>
+						</div>
+						<div class="panel-body">
+							<pre id="config-output"></pre>
+						</div>
+					</div>
+
+					<div class="panel">
+						<div class="panel-header">
+							<h2>Controls</h2>
+						</div>
+						<div class="panel-body stack">
+							<div class="profile-toggle" aria-label="IDKit app profile">
+								<span id="example-profile-label" class="profile-label">IDKit Example</span>
+								<label class="switch" aria-label="Switch IDKit app profile">
+									<input id="use-partner-profile" type="checkbox" checked />
+									<span class="switch-track"></span>
+								</label>
+								<span id="partner-profile-label" class="profile-label active">Partner app (Razer)</span>
+							</div>
+							<div class="actions">
+								<button id="verify" class="primary">Verify with World ID</button>
+								<button id="reset">Reset</button>
+							</div>
+							<p>Switching profiles resets the injected standalone SDK script before the next verify.</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="stack">
+					<div class="panel">
+						<div class="panel-header">
+							<h2>IDKit result</h2>
+						</div>
+						<div class="panel-body">
+							<pre id="response-output">{}</pre>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<script>
+			const SDK_SCRIPT_ID = 'script-world-id'
+			const STANDALONE_SDK_URL = 'https://unpkg.com/@worldcoin/idkit-standalone@2.0.2/build/index.global.js'
+			const CONFIG_PROFILES = {
+				partner: {
+					label: 'Partner app (Razer)',
+					app_id: 'app_e38bc104fa613d5d770c5e41544c2c22',
+					action: 'verify',
+					action_description: 'Verify your identity',
+				},
+				example: {
+					label: 'IDKit Example app',
+					app_id: 'app_75c2486e930cb8c0026266335c869b7a',
+					action: 'test-action',
+					action_description: 'Test action description',
+				},
+			}
+			const SHARED_IDKIT_CONFIG = {
+				verification_level: 'device',
+				show_modal: true,
+				disable_default_modal_behavior: true,
+				partner: true,
+			}
+
+			let activeProfile = 'partner'
+			let partnerIDKitInitialized = false
+
+			const els = {
+				configOutput: document.getElementById('config-output'),
+				exampleProfileLabel: document.getElementById('example-profile-label'),
+				partnerProfileLabel: document.getElementById('partner-profile-label'),
+				responseOutput: document.getElementById('response-output'),
+				sdkState: document.getElementById('sdk-state'),
+				usePartnerProfile: document.getElementById('use-partner-profile'),
+				verifyButton: document.getElementById('verify'),
+			}
+
+			function getIDKitConfig() {
+				const { label, ...profileConfig } = CONFIG_PROFILES[activeProfile]
+
+				return {
+					...profileConfig,
+					...SHARED_IDKIT_CONFIG,
+				}
+			}
+
+			function getVisibleConfig() {
+				return {
+					profile: CONFIG_PROFILES[activeProfile].label,
+					sdk_url: STANDALONE_SDK_URL,
+					script_id: SDK_SCRIPT_ID,
+					...getIDKitConfig(),
+					onSuccess: 'display raw success response',
+					onError: 'display raw error',
+					handleVerify: 'display raw proof and resolve',
+				}
+			}
+
+			function renderConfig() {
+				els.exampleProfileLabel.classList.toggle('active', activeProfile === 'example')
+				els.partnerProfileLabel.classList.toggle('active', activeProfile === 'partner')
+				els.configOutput.textContent = JSON.stringify(getVisibleConfig(), null, 2)
+			}
+
+			function setResponse(label, payload) {
+				els.responseOutput.textContent = JSON.stringify(
+					{
+						callback: label,
+						payload,
+					},
+					null,
+					2
+				)
+			}
+
+			function waitForIDKit(timeoutMs = 10000) {
+				return new Promise((resolve, reject) => {
+					const startedAt = Date.now()
+					const timer = window.setInterval(() => {
+						if (window.IDKit) {
+							window.clearInterval(timer)
+							resolve(window.IDKit)
+							return
+						}
+
+						if (Date.now() - startedAt > timeoutMs) {
+							window.clearInterval(timer)
+							reject(new Error('IDKit global did not load'))
+						}
+					}, 50)
+				})
+			}
+
+			async function loadIDKit() {
+				if (window.IDKit) {
+					els.sdkState.textContent = 'SDK loaded'
+					return window.IDKit
+				}
+
+				const existing = document.getElementById(SDK_SCRIPT_ID)
+				if (existing) {
+					return waitForIDKit()
+				}
+
+				els.sdkState.textContent = 'Loading SDK'
+
+				const script = document.createElement('script')
+				script.id = SDK_SCRIPT_ID
+				script.src = STANDALONE_SDK_URL
+				script.async = true
+				document.body.appendChild(script)
+
+				try {
+					const idkit = await waitForIDKit()
+					els.sdkState.textContent = 'SDK loaded'
+					return idkit
+				} catch (error) {
+					els.sdkState.textContent = 'SDK failed'
+					setResponse('load error', { message: error.message })
+					throw error
+				}
+			}
+
+			async function handleVerify(proof) {
+				setResponse('handleVerify', proof)
+			}
+
+			function handleSuccess(response) {
+				setResponse('onSuccess', response)
+				els.verifyButton.focus()
+			}
+
+			function handleError(error) {
+				setResponse('onError', error)
+			}
+
+			function initIDKit() {
+				if (partnerIDKitInitialized) return
+
+				const idkitConfig = getIDKitConfig()
+
+				try {
+					window.IDKit.init({
+						...idkitConfig,
+						onSuccess: handleSuccess,
+						onError: handleError,
+						handleVerify,
+					})
+					partnerIDKitInitialized = true
+				} catch (error) {
+					if (error && /already initialized/i.test(error.message || '')) {
+						partnerIDKitInitialized = true
+						return
+					}
+
+					handleError({ message: error.message })
+					throw error
+				}
+			}
+
+			async function openIDKit() {
+				const idkit = await loadIDKit()
+				if (!idkit.isInitialized) {
+					initIDKit()
+				}
+				await idkit.open()
+			}
+
+			function resetHarness() {
+				const script = document.getElementById(SDK_SCRIPT_ID)
+				if (script) script.remove()
+
+				try {
+					delete window.IDKit
+				} catch {
+					window.IDKit = undefined
+				}
+
+				partnerIDKitInitialized = false
+				els.sdkState.textContent = 'SDK not loaded'
+				els.responseOutput.textContent = '{}'
+			}
+
+			function switchProfile() {
+				activeProfile = els.usePartnerProfile.checked ? 'partner' : 'example'
+				resetHarness()
+				renderConfig()
+			}
+
+			document.getElementById('verify').addEventListener('click', async () => {
+				try {
+					await openIDKit()
+				} catch (error) {
+					handleError({ message: error.message })
+				}
+			})
+
+			document.getElementById('reset').addEventListener('click', resetHarness)
+			els.usePartnerProfile.addEventListener('change', switchProfile)
+
+			renderConfig()
+		</script>
+	</body>
+</html>
