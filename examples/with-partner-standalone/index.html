@@ -74,6 +74,20 @@
 				line-height: 1.5;
 			}
 
+			.source-link {
+				display: inline-flex;
+				margin-top: 10px;
+				color: var(--accent);
+				font-size: 14px;
+				font-weight: 700;
+				text-decoration: none;
+			}
+
+			.source-link:hover {
+				color: var(--accent-dark);
+				text-decoration: underline;
+			}
+
 			.shell {
 				display: grid;
 				grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
@@ -257,6 +271,14 @@
 				<div>
 					<h1>Partner standalone flow</h1>
 					<p>`@worldcoin/idkit@2.0.2`, device verification, partner mode, raw callback output.</p>
+					<a
+						class="source-link"
+						href="https://github.com/worldcoin/idkit-js/tree/takis/partner-standalone-flow-example/examples/with-partner-standalone"
+						target="_blank"
+						rel="noreferrer"
+					>
+						View source on GitHub
+					</a>
 				</div>
 				<span class="badge" id="sdk-state">SDK not loaded</span>
 			</header>
