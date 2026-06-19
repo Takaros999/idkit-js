@@ -18,3 +18,16 @@ python3 -m http.server 5174 --bind 127.0.0.1
 ```
 
 Then open `http://127.0.0.1:5174/`.
+
+## Deploy to Cloudflare
+
+```sh
+npx --yes wrangler login
+../../scripts/deploy-partner-standalone-cloudflare.sh
+```
+
+The script deploys this directory to the `idkit-standalone-partner-flow` Pages project. Override defaults with environment variables:
+
+```sh
+PROJECT_NAME=idkit-standalone-partner-flow BRANCH=takis/partner-standalone-flow-example ../../scripts/deploy-partner-standalone-cloudflare.sh
+```
